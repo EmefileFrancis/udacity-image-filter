@@ -31,13 +31,10 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   app.get("/filteredimage" , async (req , resp ) => {
     const image_url = req.query.image_url;
     if(!image_url){
-      return resp.status(400).send("Please provide image_url as /filteredimage?image_url=")
+      return resp.status(400).send("Please provide image_url required as query param")
     }
     const filtered_file_path = await filterImageFromURL(image_url);
-    resp.status(200).sendFile(filtered_file_path);
-    deleteLocalFiles([filtered_file_path]);
-
-    return resp;
+    return resp.status(200).sendFile(filtered_file_path, () => {deleteLocalFiles([filtered_file_path])});
   });
   //! END @TODO1
   
@@ -47,7 +44,6 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
     res.send("try GET /filteredimage?image_url={{}}")
   } );
   
-
   // Start the Server
   app.listen( port, () => {
       console.log( `server running http://localhost:${ port }` );
